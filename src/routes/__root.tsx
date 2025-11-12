@@ -1,4 +1,4 @@
-// import type { QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 // import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { ThemeProvider } from "@/components/theme";
@@ -38,5 +38,5 @@ function RootLayout({ children }: { children: React.ReactNode }) {
 
 // TYPES -----------------------------------------------------------------------------------------------------------------------------------
 type MyRouterContext = {
-  // queryClient: QueryClient;
+  queryClient: QueryClient;
 };
