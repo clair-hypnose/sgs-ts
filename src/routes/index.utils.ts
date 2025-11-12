@@ -138,15 +138,6 @@ export const survey = [
       { id: "peutEtre", label: "Peut-être, j'aimerais en savoir plus" },
     ],
   },
-  {
-    name: "q11",
-    legend: "11 - Alors, communiquez-nous vos coordonnées et rejoignez vous aussi la communauté :",
-    type: "inputs",
-    items: [
-      { id: "email", label: "Email" },
-      { id: "telephone", label: "Téléphone (optionnel)" },
-    ],
-  },
 ] as const;
 
 // SCHEMAS ---------------------------------------------------------------------------------------------------------------------------------
@@ -161,10 +152,8 @@ export const zSurvey = z.object({
   q8: z.string(),
   q9: z.string(),
   q10: z.enum(q10Items),
-  q11: z.object({
-    email: z.email(),
-    telephone: z.string().optional(),
-  }),
+  email: z.email(),
+  phone: z.string().optional(),
 });
 
 export const defaultSurveyValues: Survey = {
@@ -178,10 +167,8 @@ export const defaultSurveyValues: Survey = {
   q8: "",
   q9: "",
   q10: "oui",
-  q11: {
-    email: "contact@sgs.fr",
-    telephone: "0612345678",
-  },
+  email: "contact@sgs.fr",
+  phone: "0612345678",
 };
 
 // TYPES -----------------------------------------------------------------------------------------------------------------------------------

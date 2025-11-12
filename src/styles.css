@@ -52,6 +52,9 @@ code {
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.871 0.006 286.286);
+  --primary-gradient: oklch(0.64 0.16 269.74 / 1);
+  --secondary-gradient: oklch(0.73 0.19 144.71 / 1);
+  --tertiary-gradient: oklch(0.70 0.15 339.61 / 1);
 }
 
 .dark {
@@ -87,6 +90,9 @@ code {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
+  --primary-gradient: oklch(0.27 0.16 269.18 / 1);
+  --secondary-gradient: oklch(0.73 0.19 144.71 / 1);
+  --tertiary-gradient: oklch(0.44 0.15 342.38 / 1);
 }
 
 @theme inline {
@@ -98,8 +104,11 @@ code {
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-gradient: var(--primary-gradient);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-gradient: var(--secondary-gradient);
+  --color-tertiary-gradient: var(--tertiary-gradient);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);

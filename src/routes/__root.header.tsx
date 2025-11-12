@@ -7,10 +7,10 @@ import { Separator } from "@/components/ui/separator";
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full bg-background">
-      <div className="container-wrapper 3xl:fixed:px-0 px-6">
-        <div className="**:data-[slot=separator]:!h-4 3xl:fixed:container flex h-(--header-height) items-center">
-          <Button asChild className="hidden size-8 lg:flex" size="icon" variant="ghost">
-            <Link to="/">SGS</Link>
+      <div className="container-wrapper 3xl:fixed:px-0 px-6 py-2">
+        <div className="3xl:fixed:container flex h-(--header-height) items-center **:data-[slot=separator]:h-4!">
+          <Button asChild className="hidden font-bold text-2xl lg:flex" variant="ghost">
+            <Link to="/">TheraFlow</Link>
           </Button>
           <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
             <Separator orientation="vertical" />

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Bg } from "@/components/bg";
 import { SurveyForm } from "./index.form";
 import { Header, HeaderDescription, HeaderHeading } from "./index.header";
 
@@ -8,14 +9,15 @@ export const Route = createFileRoute("/")({ component: IndexPage });
 // PAGE ------------------------------------------------------------------------------------------------------------------------------------
 export function IndexPage() {
   const description = `Nous sommes trois thérapeutes et informaticiens, motivé·es par une idée simple : Vous libérer du temps pour votre cœur de métier en
-        prenant en charge votre stratégie, votre communication et vos réseaux sociaux. Pour cela, on aimerait en savoir plus sur vos besoins
-        à l'aide de ce sondage.`;
-  const title = "Bienvenue sur SGS";
+        prenant en charge votre stratégie, votre communication et vos réseaux sociaux.`;
 
   return (
     <>
+      <Bg />
       <Header>
-        <HeaderHeading className="max-w-4xl">{title}</HeaderHeading>
+        <HeaderHeading className="max-w-4xl">
+          Pourquoi <span className="text-accent-foreground">TheraFlow</span> ?
+        </HeaderHeading>
         <HeaderDescription>{description}</HeaderDescription>
       </Header>
       <SurveyForm />

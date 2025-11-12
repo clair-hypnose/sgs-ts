@@ -2,7 +2,7 @@ import type { FieldPath, FieldValues, UseControllerProps } from "react-hook-form
 import z from "zod";
 
 // CONST -----------------------------------------------------------------------------------------------------------------------------------
-const fieldTypes = ["checkbox", "inputs", "radio", "sortable", "textarea"] as const;
+const fieldTypes = ["checkbox", "radio", "sortable", "textarea"] as const;
 
 // SCHEMAS ---------------------------------------------------------------------------------------------------------------------------------
 const zFieldType = z.enum(fieldTypes);
