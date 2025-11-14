@@ -1,9 +1,12 @@
-import { type FieldPath, type FieldValues, useController } from "react-hook-form";
+import { PlusCircleIcon, Trash2Icon } from "lucide-react";
+import { type Dispatch, type SetStateAction, useState } from "react";
+import { type ControllerRenderProps, type FieldPath, type FieldValues, useController } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
-import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
 import { FieldError } from "./field-error";
-import type { FieldProps, SurveyItem } from "./utils";
+import type { FieldProps, SurveyEditableItem } from "./utils";
 
 // STYLES ----------------------------------------------------------------------------------------------------------------------------------
 const CHECKBOX = {
@@ -16,21 +19,17 @@ const CHECKBOX = {
 };
 
 // MAIN ------------------------------------------------------------------------------------------------------------------------------------
-export function CheckboxField<V extends FieldValues, N extends FieldPath<V>>(props: CheckboxFieldProps<V, N>) {
-  const { description, items, legend, ...rest } = props;
+export function CheckboxesField<V extends FieldValues, N extends FieldPath<V>>(props: CheckboxesFieldProps<V, N>) {
+  const { description, legend, ...rest } = props;
   const { field, fieldState } = useController(rest);
+  const [items, setItems] = useState([...props.items]);
+  const { onChange, value } = field;
   const { invalid } = fieldState;
-  const { name, onBlur, onChange, value } = field;
 
-  const handleCheckedChange = (id: string) => (checked: boolean) => {
-    const newItems = checked ? [...value.items, id] : value.items.filter((item: string) => item !== id);
-    onChange({ items: newItems, other: value.other });
-    onBlur();
-  };
-
-  const handleOtherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange({ ...value, other: e.target.value });
-    onBlur();
+  const addEditableItem = () => {
+    const newItem = { editable: true, id: `extra${items.length}`, label: "" };
+    setItems([...items, newItem]);
+    onChange([...value, newItem]);
   };
 
   return (
@@ -38,29 +37,78 @@ export function CheckboxField<V extends FieldValues, N extends FieldPath<V>>(pro
       <FieldLegend>{legend}</FieldLegend>
       {description && <FieldDescription>{description}</FieldDescription>}
       <FieldGroup className={CHECKBOX.group()} data-slot="checkbox-group">
-        {items.map(({ id, label }) => (
-          <Field className={CHECKBOX.field()} key={`${name}_${id}`} orientation="horizontal">
-            <Checkbox
-              checked={value.items.includes(id)}
-              className={CHECKBOX.checkbox()}
-              id={`${name}_${id}`}
-              name={`${name}.items`}
-              onCheckedChange={handleCheckedChange(id)}
-            />
-            <FieldLabel className={CHECKBOX.label()} htmlFor={`${name}_${id}`}>
-              <span className="flex-none">{label}</span>
-              {id === "autre" && (
-                <Input className="max-w-3xs bg-background" name={`${name}.other`} onChange={handleOtherChange} value={value.other} />
-              )}
-            </FieldLabel>
-          </Field>
+        {items.map((item) => (
+          <CheckboxField field={field} item={item} items={items} key={item.id} setItems={setItems} />
         ))}
+        <Button className="cursor-pointer" onClick={addEditableItem} size="sm" type="button" variant="secondary">
+          <PlusCircleIcon /> Ajouter une réponse
+        </Button>
         <FieldError {...fieldState} />
       </FieldGroup>
     </FieldSet>
   );
 }
-export type CheckboxFieldProps<V extends FieldValues, N extends FieldPath<V>> = FieldProps<V, N> & {
+export type CheckboxesFieldProps<V extends FieldValues, N extends FieldPath<V>> = FieldProps<V, N> & {
   description?: string;
-  items: readonly SurveyItem[];
+  items: readonly SurveyEditableItem[];
+};
+
+// ITEM ------------------------------------------------------------------------------------------------------------------------------------
+export function CheckboxField<V extends FieldValues, N extends FieldPath<V>>({ field, item, items, setItems }: CheckboxFieldProps<V, N>) {
+  const { name, onBlur, onChange, value } = field;
+
+  const changeChecked = (checked: boolean) => {
+    const newValue = checked ? [...value, item] : value.filter(({ id }: SurveyEditableItem) => item.id !== id);
+    onChange(newValue);
+    onBlur();
+  };
+
+  const changeEditable = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newItem = { ...item, label: e.target.value };
+    setItems(items.map((it) => (it.id === item.id ? newItem : it)));
+    if (value.some(({ id }: SurveyEditableItem) => id === item.id)) {
+      onChange(value.map((it: SurveyEditableItem) => (it.id === item.id ? newItem : it)));
+      onBlur();
+    }
+  };
+
+  const remove = () => {
+    setItems(items.filter(({ id }) => item.id !== id));
+    if (value.some(({ id }: SurveyEditableItem) => id === item.id)) {
+      onChange(value.filter(({ id }: SurveyEditableItem) => item.id !== id));
+      onBlur();
+    }
+  };
+
+  return (
+    <Field className={CHECKBOX.field()} orientation="horizontal">
+      <Checkbox
+        checked={value.some(({ id }: SurveyEditableItem) => id === item.id)}
+        className={CHECKBOX.checkbox()}
+        id={`${name}_${item.id}`}
+        name={name}
+        onCheckedChange={changeChecked}
+      />
+      <FieldLabel className={CHECKBOX.label()} htmlFor={`${name}_${item.id}`}>
+        {item.editable ? (
+          <InputGroup className="max-w-2xs">
+            <InputGroupInput onChange={changeEditable} placeholder="Veuillez préciser" value={item.label} />
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton aria-label="Retirer" className="cursor-pointer" onClick={remove} size="icon-xs" title="Retirer">
+                {<Trash2Icon />}
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+        ) : (
+          item.label
+        )}
+      </FieldLabel>
+    </Field>
+  );
+}
+export type CheckboxFieldProps<V extends FieldValues, N extends FieldPath<V>> = {
+  field: ControllerRenderProps<V, N>;
+  item: SurveyEditableItem;
+  items: SurveyEditableItem[];
+  setItems: Dispatch<SetStateAction<SurveyEditableItem[]>>;
 };

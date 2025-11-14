@@ -1,3 +1,4 @@
+import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
 import confetti from "canvas-confetti";
 import { useRef } from "react";
@@ -5,7 +6,7 @@ import { Fragment } from "react/jsx-runtime";
 import { type FieldPath, type FieldValues, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Bg } from "@/components/bg";
-import { CheckboxField, type CheckboxFieldProps } from "@/components/form/checkbox-field";
+import { CheckboxesField, type CheckboxesFieldProps } from "@/components/form/checkbox-field";
 import { EmailField } from "@/components/form/email-field";
 import { PhoneField } from "@/components/form/phone-field";
 import { RadioField, type RadioFieldProps } from "@/components/form/radio-field";
@@ -92,21 +93,21 @@ export function SurveyForm() {
           </CardContent>
         </Card>
       </section>
-      {/* <DevTool control={control} /> */}
+      <DevTool control={control} />
     </form>
   );
 }
 
 // FIELD -----------------------------------------------------------------------------------------------------------------------------------
 export function SurveyField<T extends FieldType, V extends FieldValues, N extends FieldPath<V>>(props: SurveyFieldProps<T, V, N>) {
-  if (props.type === "checkbox") return <CheckboxField {...props} />;
+  if (props.type === "checkbox") return <CheckboxesField {...props} />;
   if (props.type === "radio") return <RadioField {...props} />;
   if (props.type === "sortable") return <SortableField {...props} />;
   if (props.type === "textarea") return <TextareaField {...props} />;
   return null;
 }
 type SurveyFieldProps<T extends FieldType, V extends FieldValues, N extends FieldPath<V>> = T extends "checkbox"
-  ? { type: T } & CheckboxFieldProps<V, N>
+  ? { type: T } & CheckboxesFieldProps<V, N>
   : T extends "radio"
     ? { type: T } & RadioFieldProps<V, N>
     : T extends "sortable"

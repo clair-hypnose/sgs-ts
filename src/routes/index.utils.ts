@@ -1,9 +1,9 @@
 import { z } from "zod/mini";
-import { zSurveyItem } from "@/components/form/utils";
+import { zSurveyEditableItem } from "@/components/form/utils";
 
 // CONST -----------------------------------------------------------------------------------------------------------------------------------
-const q1Items = ["instagram", "facebook", "linkedIn", "tiktok", "youtube", "autre"] as const;
-const q2Items = ["oui", "peu", "non"] as const;
+// const q1Items = ["instagram", "facebook", "linkedIn", "tiktok", "youtube", "autre"] as const;
+// const q2Items = ["oui", "peu", "non"] as const;
 // const q3Items = ["boucheAOreille", "reseauxSociaux", "siteInternet", "plateformes", "publicite"] as const;
 // const q4Items = [
 //   "manqueTemps",
@@ -17,20 +17,20 @@ const q2Items = ["oui", "peu", "non"] as const;
 //   "inutilite",
 //   "autre",
 // ] as const;
-const q5Items = [
-  "perteAuthenticite",
-  "informationsInexactes",
-  "deshumanisation",
-  "deontologie",
-  "perteControleImage",
-  "generationIA",
-  "complexite",
-  "cout",
-  "securite",
-  "autre",
-] as const;
-const q6Items = ["tresProblematique", "plutotProblematique", "neutre", "plutotOk", "totalementOk"] as const;
-const q10Items = ["oui", "peutEtre"] as const;
+// const q5Items = [
+//   "perteAuthenticite",
+//   "informationsInexactes",
+//   "deshumanisation",
+//   "deontologie",
+//   "perteControleImage",
+//   "generationIA",
+//   "complexite",
+//   "cout",
+//   "securite",
+//   "autre",
+// ] as const;
+// const q6Items = ["tresProblematique", "plutotProblematique", "neutre", "plutotOk", "totalementOk"] as const;
+// const q10Items = ["oui", "peutEtre"] as const;
 
 export const survey = [
   {
@@ -45,7 +45,6 @@ export const survey = [
       { id: "tiktok", label: "TikTok" },
       { id: "youtube", label: "Youtube" },
       // { id: "none", label: "Aucun réseau social" },
-      { id: "autre", label: "Autre (veuillez préciser)" },
     ],
   },
   {
@@ -68,7 +67,6 @@ export const survey = [
       { id: "siteInternet", label: "Un site internet" },
       { id: "plateformes", label: "Des plateformes de réservation (Resalib, Medoucine, etc...)" },
       { id: "publicite", label: "La publicité (physique ou digitale)" },
-      { id: "autre", label: "Autre (veuillez préciser)" },
     ],
   },
   {
@@ -85,7 +83,6 @@ export const survey = [
       { id: "concentrationMetier", label: "Je préfère me concentrer sur mes consultations" },
       { id: "peurVisibilite", label: "Je n'aime pas être visible sur les réseaux sociaux" },
       { id: "inutilite", label: "Je ne pense pas que ce soit utile pour mon activité" },
-      { id: "autre", label: "Autre (veuillez préciser)" },
     ],
   },
   {
@@ -103,7 +100,6 @@ export const survey = [
       { id: "complexite", label: "La complexité technique de l'outil" },
       { id: "cout", label: "Le coût de la solution" },
       { id: "securite", label: "La sécurité et la confidentialité des données" },
-      { id: "autre", label: "Autre (veuillez préciser)" },
     ],
   },
   {
@@ -148,29 +144,22 @@ export const survey = [
 
 // SCHEMAS ---------------------------------------------------------------------------------------------------------------------------------
 export const zSurveyValues = z.object({
-  q1: z
-    .object({ items: z.array(z.enum(q1Items)), other: z.string() })
-    .check(
-      z.refine(
-        ({ items, other }) => !items.includes("autre") || (items.includes("autre") && other.length > 0),
-        "'Autre' n'est pas précisé."
-      )
-    ),
+  q1: z.array(zSurveyEditableItem),
   q2: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
-  q3: z.array(zSurveyItem).check(z.minLength(survey[2].items.length)),
-  q4: z.array(zSurveyItem).check(z.minLength(survey[3].items.length)),
-  q5: z
-    .object({
-      items: z.array(z.enum(q5Items)),
-      other: z.string(),
-    })
+  q3: z
+    .array(zSurveyEditableItem)
     .check(
-      z.refine(({ items }) => items.length > 0, "Cette question nécessite au moins une réponse."),
-      z.refine(
-        ({ items, other }) => !items.includes("autre") || (items.includes("autre") && other.length > 0),
-        "'Autre' n'est pas précisé."
-      )
+      z.refine((items) => items.filter(({ editable }) => editable).every(({ label }) => label !== ""), "Certaines réponses sont vides.")
     ),
+  q4: z
+    .array(zSurveyEditableItem)
+    .check(
+      z.refine((items) => items.filter(({ editable }) => editable).every(({ label }) => label !== ""), "Certaines réponses sont vides.")
+    ),
+  q5: z.array(zSurveyEditableItem).check(
+    z.minLength(1, "Cette question nécessite au moins une réponse."),
+    z.refine((items) => items.every(({ label }) => label !== ""), "Cette question nécessite au moins une réponse.")
+  ),
   q6: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
   q7: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
   q8: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
@@ -180,30 +169,30 @@ export const zSurveyValues = z.object({
   phone: z.optional(z.string()),
 });
 
-export const zSurvey = z.object({
-  q1: z.object({ items: z.array(z.enum(q1Items)), other: z.string() }),
-  q2: z.enum(q2Items, "Cette question nécessite une réponse."),
-  q3: z.array(zSurveyItem).check(z.minLength(survey[2].items.length)),
-  q4: z.array(zSurveyItem).check(z.minLength(survey[3].items.length)),
-  q5: z.object({
-    items: z.array(z.enum(q5Items)).check(z.minLength(1, "Cette question nécessite au moins 1 réponse.")),
-    other: z.string(),
-  }),
-  q6: z.enum(q6Items, "Cette question nécessite une réponse."),
-  q7: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
-  q8: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
-  q9: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
-  q10: z.enum(q10Items, "Cette question nécessite au moins 1 réponse."),
-  email: z.email("L'email indiqué n'est pas valide."),
-  phone: z.optional(z.string()),
-});
+// export const zSurvey = z.object({
+//   q1: z.object({ items: z.array(z.enum(q1Items)), other: z.string() }),
+//   q2: z.enum(q2Items, "Cette question nécessite une réponse."),
+//   q3: z.array(zSurveyItem).check(z.minLength(survey[2].items.length)),
+//   q4: z.array(zSurveyItem).check(z.minLength(survey[3].items.length)),
+//   q5: z.object({
+//     items: z.array(z.enum(q5Items)).check(z.minLength(1, "Cette question nécessite au moins 1 réponse.")),
+//     other: z.string(),
+//   }),
+//   q6: z.enum(q6Items, "Cette question nécessite une réponse."),
+//   q7: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
+//   q8: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
+//   q9: z.string().check(z.minLength(1, "Cette question nécessite une réponse.")),
+//   q10: z.enum(q10Items, "Cette question nécessite au moins 1 réponse."),
+//   email: z.email("L'email indiqué n'est pas valide."),
+//   phone: z.optional(z.string()),
+// });
 
 export const defaultSurveyValues: SurveyValues = {
-  q1: { items: [], other: "" },
+  q1: [],
   q2: "",
   q3: [...survey[2].items],
   q4: [...survey[3].items],
-  q5: { items: [], other: "" },
+  q5: [],
   q6: "",
   q7: "",
   q8: "",
@@ -214,5 +203,5 @@ export const defaultSurveyValues: SurveyValues = {
 };
 
 // TYPES -----------------------------------------------------------------------------------------------------------------------------------
-export type Survey = z.infer<typeof zSurvey>;
+// export type Survey = z.infer<typeof zSurvey>;
 export type SurveyValues = z.infer<typeof zSurveyValues>;
