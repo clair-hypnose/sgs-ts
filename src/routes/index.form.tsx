@@ -1,4 +1,4 @@
-import { DevTool } from "@hookform/devtools";
+// import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
 import confetti from "canvas-confetti";
 import { useRef } from "react";
@@ -93,7 +93,7 @@ export function SurveyForm() {
           </CardContent>
         </Card>
       </section>
-      <DevTool control={control} />
+      {/* <DevTool control={control} /> */}
     </form>
   );
 }
